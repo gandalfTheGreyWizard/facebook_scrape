@@ -24,7 +24,7 @@ SPIDER_MIDDLEWARES = {
 }
 
 
-DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 
@@ -34,6 +34,7 @@ HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
+
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32

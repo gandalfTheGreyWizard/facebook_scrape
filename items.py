@@ -11,6 +11,6 @@ import scrapy
 class PracticeItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    title = scrapy.Field()
     news = scrapy.Field()
     comments = scrapy.Field()
+    commentor = scrapy.Field()

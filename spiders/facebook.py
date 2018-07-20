@@ -8,20 +8,39 @@ class FacebookSpider(scrapy.Spider):
 	name = 'facebook'
 	allowed_domains = ['facebook.com']
 	start_urls = ['https://www.facebook.com/login/']
+	script = """
+	function main(splash, args)
+  	splash:go("https://www.facebook.com/bbcnews/posts/")
+  	get_dim = splash:jsfunc([[
+    function()
+    {
+    var elem = document.getElementsByClassName("UFIPagerLink");
+    var arr = []
+    for(var i=0;i<elem.length;i++)
+    {
+    	arr.push({"x":elem[i].getBoundingClientRect().left,"y":elem[i].getBoundingClientRect().top});
+  	}
+    return arr;
+    }
+    ]])
+  	local dimensions = get_dim()
+  	local j = 1
+  	while dimensions[j] do
+  		splash:set_viewport_full()
+		splash:wait(0.1)
+    	splash:mouse_click(dimensions[j].x, dimensions[j].y)
+    	splash:wait(0.5)
+    	j = j+1
+  	end
+  	return splash:html()
+	end
+	"""
 
-	def parse(self, response):
-		return FormRequest.from_response(response,formdata={"email":"chakraborty.soumik23@gmail.com","pass":"asusmicromax"},callback=self.after_login)
-	def after_login(self,response):
+	def parse(self,response):
 		urls = ["https://www.facebook.com/bbcnews/posts/",]
 		for url in urls:
-			yield SplashRequest(url,self.search_news,args={'wait': 0.5})
+			yield SplashRequest(url,self.search_news,args = {'lua_source': self.script,'wait': 0.5,},endpoint='execute?timeout=3600',)
 	def search_news(self,response):
-		scrapy.shell.inspect_response(response,self)
-		item = PracticeItem()
-		body = Selector(text = response.body, type="html")
-		response.selector.remove_namespaces()
-		news = body.re('125;"><p>[^<]+')
-		comments = body.re('body:{text:"[^"]+')
-		item["news"] = news
-		item["comments"] = comments
-		return item
+		resp = open("resp.html","w")
+		resp.write(str(response.body))
+		
